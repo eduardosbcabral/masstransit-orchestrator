@@ -9,7 +9,6 @@ builder.Services.AddSwaggerGen(c =>
 {
     c.SwaggerDoc("v1", new OpenApiInfo { Title = "MassTransit.Orchestrator.Api", Version = "v1" });
 });
-builder.Services.AddLogging();
 
 builder.Services.AddMassTransit(x =>
 {
@@ -25,11 +24,10 @@ builder.Services.AddMassTransit(x =>
 
 builder.Services.AddMassTransitHostedService();
 
-builder.Services.AddScoped<ICustomPublisherService>(x => 
+builder.Services.AddScoped<IAsyncService>(x => 
 {
-    var bus = x.GetService<IBus>();
-    var logger = x.GetService<ILogger<CustomPublisherService>>();
-    return new CustomPublisherService(bus, logger);
+    var provider = x.GetService<ISendEndpointProvider>();
+    return new AsyncService(provider);
 });
 
 var app = builder.Build();
